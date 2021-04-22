@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+# React + Electron + Electron packager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 快速上手
 
-## Available Scripts
+1. `npx create-react-app react-electron-demo`
+2. `cd react-electron-demo`
+3. `npm install electron`
+4. `npm install electron-packager --save-dev`
+5. 編輯根目錄 package.json `"homepage": "./",`
+6. `npm run build`
+7. `cd build`
+8. build 創建 main.js
+9. build 創建 package.json
+10. `npm run package`
 
-In the project directory, you can run:
+```jsx
+/*main.js*/
 
-### `npm start`
+const electron = require("electron");
+const { app } = electron;
+const { BrowserWindow } = electron;
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+let win;
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+function createWindow() {
+	win = new BrowserWindow({ width: 1920, height: 1080 });
 
-### `npm test`
+	win.loadURL(`file://${__dirname}/index.html`);
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+	//win.webContents.openDevTools();
 
-### `npm run build`
+	win.on("closed", () => {
+		win = null;
+	});
+}
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+app.on("ready", createWindow);
+/* var mainWindow = new BrowserWindow({
+  webPreferences: {
+    nodeIntegration: false
+  }
+}); */
+app.on("window-all-closed", () => {
+	if (process.platform !== "darwin") {
+		app.quit();
+	}
+});
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+app.on("activate", () => {
+	if (win === null) {
+		createWindow();
+	}
+});
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```jsx
+/*package.json*/
+{
+	"name": "react-electron-demo",
+	"version": "0.1.0",
+	"main": "main.js",
+	"scripts": {
+		"electron": "electron .",
+		"package": "electron-packager . react-electron-demo --platform=win32 --arch=x64 --electron-version=12.0.5 --overwrite --icon=./favicon.ico"
+	}
+}
 
-### `npm run eject`
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 資源
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+[Electron | Build cross-platform desktop apps with JavaScript, HTML, and CSS.](https://www.electronjs.org/)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+[Quick Start Guide | Electron](https://www.electronjs.org/docs/tutorial/quick-start)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+[electronPackager | electron-packager](https://electron.github.io/electron-packager/master/modules/electronpackager.html)
 
-## Learn More
+[在 React 中使用 Electron](https://segmentfault.com/a/1190000039729774)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[electron 原来这么简单----打包你的 react、VUE 桌面应用程序](https://segmentfault.com/a/1190000014030465?utm_source=sf-similar-article)
